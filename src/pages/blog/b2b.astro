@@ -1,0 +1,58 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import BackToPrev from "@components/BackToPrev.astro";
+---
+
+<PageLayout title="مشاوره B2B" description="مشاوره فنی برای کسب‌وکارها و استارتاپ‌ها">
+  <Container>
+    <article class="space-y-8">
+      <div class="animate">
+        <BackToPrev href="/services">
+          بازگشت به خدمات مشاوره
+        </BackToPrev>
+      </div>
+
+      <h1 class="animate text-2xl font-black text-black dark:text-white">مشاوره فنی کسب‌وکار و استارتاپ</h1>
+      <p class="animate">
+        این جلسه برای تیم‌ها و شرکت‌هایی است که نیاز به تصمیم‌گیری دقیق در معماری، توسعه محصول و ساختار تیم فنی دارند.
+      </p>
+      <ul class="animate list-disc space-y-2 pr-5">
+        <li>بازبینی معماری و زیرساخت فعلی</li>
+        <li>تحلیل ریسک‌های فنی و هزینه‌های مقیاس‌پذیری</li>
+        <li>طراحی نقشه راه فنی کوتاه‌مدت و میان‌مدت</li>
+      </ul>
+
+      <section class="animate space-y-3">
+        <h2 class="text-xl font-black text-black dark:text-white">نظر مشتریان</h2>
+        <ul class="space-y-3">
+          <li class="animate-rtl rounded border border-black/15 p-4 dark:border-white/20">
+            <div class="font-black text-black dark:text-white">شرکت آتیه پرداز</div>
+            <div class="text-sm opacity-70">cto@atieh.example.com</div>
+            <p class="mt-2 text-sm">در یک جلسه مسیر مهاجرت معماری و اولویت‌های فنی ۶ ماه آینده روشن شد.</p>
+          </li>
+          <li class="animate-rtl rounded border border-black/15 p-4 dark:border-white/20">
+            <div class="font-black text-black dark:text-white">استارتاپ نوین‌مارکت</div>
+            <div class="text-sm opacity-70">tech@novin.example.com</div>
+            <p class="mt-2 text-sm">برای مقیاس‌پذیری و کنترل هزینه زیرساخت پیشنهادهای دقیق و عملی گرفتیم.</p>
+          </li>
+          <li class="animate-rtl rounded border border-black/15 p-4 dark:border-white/20">
+            <div class="font-black text-black dark:text-white">گروه داده‌گستر</div>
+            <div class="text-sm opacity-70">product@datagostar.example.com</div>
+            <p class="mt-2 text-sm">هماهنگی بین تیم محصول و تیم فنی بعد از جلسه به شکل محسوسی بهتر شد.</p>
+          </li>
+          <li class="animate-rtl rounded border border-black/15 p-4 dark:border-white/20">
+            <div class="font-black text-black dark:text-white">پلتفرم هابینو</div>
+            <div class="text-sm opacity-70">engineering@habino.example.com</div>
+            <p class="mt-2 text-sm">نقشه راه فنی واقع‌بینانه‌ای تعریف کردیم که با منابع فعلی ما هم‌خوان است.</p>
+          </li>
+          <li class="animate-rtl rounded border border-black/15 p-4 dark:border-white/20">
+            <div class="font-black text-black dark:text-white">استودیو دیدار</div>
+            <div class="text-sm opacity-70">devops@didar.example.com</div>
+            <p class="mt-2 text-sm">بازبینی معماری سرویس‌ها باعث کاهش ریسک انتشار و افزایش سرعت تحویل شد.</p>
+          </li>
+        </ul>
+      </section>
+    </article>
+  </Container>
+</PageLayout>

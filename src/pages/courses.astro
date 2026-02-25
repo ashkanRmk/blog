@@ -1,0 +1,45 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+---
+
+<PageLayout title="دوره‌ها" description="مسیرهای آموزشی برنامه‌نویسی">
+  <Container>
+    <section class="space-y-6">
+      <h1 class="animate text-2xl font-black text-black dark:text-white">دوره‌ها</h1>
+      <div class="animate overflow-x-auto rounded-lg border border-black/15 dark:border-white/20">
+        <table class="w-full min-w-[680px] text-sm">
+          <thead class="bg-black/5 dark:bg-white/5">
+            <tr>
+              <th class="px-4 py-3 text-right font-black text-black dark:text-white">دوره</th>
+              <th class="px-4 py-3 text-right font-black text-black dark:text-white">پیش‌نیاز</th>
+              <th class="px-4 py-3 text-right font-black text-black dark:text-white">ثبت‌نام</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-t border-black/10 dark:border-white/15">
+              <td class="px-4 py-3">Backend مقدماتی</td>
+              <td class="px-4 py-3">آشنایی پایه با JavaScript و HTTP</td>
+              <td class="px-4 py-3"><a href="#" class="underline underline-offset-2">ثبت‌نام</a></td>
+            </tr>
+            <tr class="border-t border-black/10 dark:border-white/15">
+              <td class="px-4 py-3">Backend پیشرفته</td>
+              <td class="px-4 py-3">تسلط به API، پایگاه‌داده و مفاهیم معماری</td>
+              <td class="px-4 py-3"><a href="#" class="underline underline-offset-2">ثبت‌نام</a></td>
+            </tr>
+            <tr class="border-t border-black/10 dark:border-white/15">
+              <td class="px-4 py-3">Frontend مقدماتی</td>
+              <td class="px-4 py-3">HTML/CSS پایه و آشنایی با JavaScript</td>
+              <td class="px-4 py-3"><a href="#" class="underline underline-offset-2">ثبت‌نام</a></td>
+            </tr>
+            <tr class="border-t border-black/10 dark:border-white/15">
+              <td class="px-4 py-3">Frontend پیشرفته</td>
+              <td class="px-4 py-3">تجربه کار با فریم‌ورک‌ها و مدیریت وضعیت</td>
+              <td class="px-4 py-3"><a href="#" class="underline underline-offset-2">ثبت‌نام</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </Container>
+</PageLayout>

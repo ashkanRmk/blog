@@ -1,0 +1,46 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+---
+
+<PageLayout title="خدمات مشاوره" description="خدمات مشاوره فنی و منتورینگ">
+  <Container>
+    <div class="space-y-8">
+      <h1 class="animate text-2xl font-black text-black dark:text-white">خدمات مشاوره</h1>
+      <p class="animate">نوع جلسه مورد نیاز خود را انتخاب کنید.</p>
+
+      <ul class="flex flex-col gap-4">
+        <li class="animate-rtl">
+          <a href="/blog/consult" class="relative group flex flex-nowrap py-3 px-4 pl-10 rounded-lg border border-black/15 dark:border-white/20 hover:bg-black/5 dark:hover:bg-white/5 hover:text-black dark:hover:text-white transition-colors duration-300 ease-in-out">
+            <div class="flex flex-col flex-1 truncate">
+              <div class="font-black text-black dark:text-white">منتورینگ و مشاوره ۱:۱</div>
+              <div class="text-sm">جلسه فردی برای مسیر شغلی، رشد فنی و تصمیم‌گیری‌های شخصی در توسعه نرم‌افزار.</div>
+            </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              class="absolute top-1/2 left-2 -translate-y-1/2 size-5 stroke-2 fill-none stroke-current">
+              <line x1="5" y1="12" x2="19" y2="12" class="-translate-x-3 group-hover:translate-x-0 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out" />
+              <polyline points="12 5 5 12 12 19" class="translate-x-1 group-hover:translate-x-0 transition-transform duration-300 ease-in-out" />
+            </svg>
+          </a>
+        </li>
+        <li class="animate-rtl">
+          <a href="/blog/b2b" class="relative group flex flex-nowrap py-3 px-4 pl-10 rounded-lg border border-black/15 dark:border-white/20 hover:bg-black/5 dark:hover:bg-white/5 hover:text-black dark:hover:text-white transition-colors duration-300 ease-in-out">
+            <div class="flex flex-col flex-1 truncate">
+              <div class="font-black text-black dark:text-white">مشاوره فنی کسب‌وکار و استارتاپ</div>
+              <div class="text-sm">ارزیابی معماری، مقیاس‌پذیری، تیم فنی و نقشه راه محصول برای شرکت‌ها و استارتاپ‌ها.</div>
+            </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              class="absolute top-1/2 left-2 -translate-y-1/2 size-5 stroke-2 fill-none stroke-current">
+              <line x1="5" y1="12" x2="19" y2="12" class="-translate-x-3 group-hover:translate-x-0 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out" />
+              <polyline points="12 5 5 12 12 19" class="translate-x-1 group-hover:translate-x-0 transition-transform duration-300 ease-in-out" />
+            </svg>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </Container>
+</PageLayout>

@@ -1,0 +1,77 @@
+---
+import { type CollectionEntry, getCollection } from "astro:content";
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import ArrowCard from "@components/ArrowCard.astro";
+import { BLOG } from "@consts";
+import { getShamsiYearMonth } from "@lib/utils";
+
+const posts = (await getCollection("blog"))
+  .filter(post => !post.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+type MonthBucket = {
+  month: string;
+  posts: CollectionEntry<"blog">[];
+};
+
+type YearBucket = {
+  year: string;
+  months: MonthBucket[];
+};
+
+const grouped = new Map<string, Map<string, MonthBucket>>();
+
+for (const post of posts) {
+  const { year, month } = getShamsiYearMonth(post.data.date);
+
+  if (!grouped.has(year)) {
+    grouped.set(year, new Map<string, MonthBucket>());
+  }
+
+  const yearMap = grouped.get(year)!;
+  if (!yearMap.has(month)) {
+    yearMap.set(month, { month, posts: [] });
+  }
+
+  yearMap.get(month)!.posts.push(post);
+}
+
+const yearBuckets: YearBucket[] = [...grouped.entries()].map(([year, months]) => ({
+  year,
+  months: [...months.values()],
+}));
+---
+
+<PageLayout title={BLOG.TITLE} description={BLOG.DESCRIPTION}>
+  <Container>
+    <div class="space-y-10">
+      <div class="animate font-black text-black dark:text-white">
+        وبلاگ
+      </div>
+      <div class="space-y-4">
+        {yearBuckets.map((yearBucket) => (
+          <section class="animate space-y-4">
+            <div class="text-2xl font-black text-black dark:text-white">
+              {yearBucket.year}
+            </div>
+            {yearBucket.months.map((monthBucket) => (
+              <div class="space-y-3">
+                <div class="text-base font-medium text-black/80 dark:text-white/80">
+                  {monthBucket.month}
+                </div>
+                <ul class="flex flex-col gap-4">
+                  {monthBucket.posts.map((post) => (
+                    <li class="animate-rtl">
+                      <ArrowCard entry={post}/>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </section>
+        ))}
+      </div>
+    </div>
+  </Container>
+</PageLayout>

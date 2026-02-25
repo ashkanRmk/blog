@@ -1,0 +1,25 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import BackToPrev from "@components/BackToPrev.astro";
+---
+
+<PageLayout title="من کی ام؟" description="معرفی کوتاه نویسنده وبلاگ">
+  <Container>
+    <article class="space-y-8">
+      <div class="animate">
+        <BackToPrev href="/">
+          بازگشت به منوی اصلی
+        </BackToPrev>
+      </div>
+
+      <h1 class="animate text-2xl font-black text-black dark:text-white">من کی ام؟</h1>
+      <p class="animate">
+        من یک توسعه‌دهنده نرم‌افزار هستم که روی طراحی محصول، معماری وب و تجربه کاربری فارسی تمرکز دارم.
+      </p>
+      <p class="animate">
+        در این وبلاگ تجربه‌های واقعی پروژه، نکات فنی و مسیرهای یادگیری را با نگاه عملی منتشر می‌کنم.
+      </p>
+    </article>
+  </Container>
+</PageLayout>

@@ -1,0 +1,132 @@
+---
+import { getCollection } from "astro:content";
+import Container from "@components/Container.astro";
+import PageLayout from "@layouts/PageLayout.astro";
+import ArrowCard from "@components/ArrowCard.astro";
+import Link from "@components/Link.astro";
+import { SITE, HOME, SOCIALS } from "@consts";
+
+const blog = (await getCollection("blog"))
+  .filter(post => !post.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 6);
+
+---
+
+<PageLayout title={HOME.TITLE} description={HOME.DESCRIPTION}>
+  <Container>
+    <h4 class="animate font-black text-black dark:text-white">
+      سلام، به {SITE.NAME} خوش آمدید.
+    </h4>
+    <div class="space-y-16">
+      <section>
+        <article class="space-y-4">
+          <p class="animate">
+            اینجا یک وبلاگ فارسی مینیمال است که با Astro ساخته شده و روی سرعت، خوانایی و تجربه ساده تمرکز دارد.
+          </p>
+          <p class="animate">
+            نوشته‌ها به صورت استاتیک منتشر می‌شوند و زیر هر مطلب می‌توانید دیدگاه‌ها را از سرویس کامنت خارجی بخوانید و نظر ثبت کنید.
+          </p>
+          <p class="animate">
+            <Link href="/blog/me">من کی ام؟</Link>
+          </p>
+        </article>
+      </section>
+
+      <section class="animate space-y-6">
+        <div class="flex flex-wrap gap-y-2 items-center justify-between">
+          <h5 class="font-black text-black dark:text-white">
+            ارتباط
+          </h5>
+        </div>
+        <article>
+          <p>
+            برای ارتباط می‌توانید از شبکه‌های اجتماعی یا ایمیل استفاده کنید.
+          </p>
+        </article>
+        <ul class="flex flex-wrap gap-2">
+          {SOCIALS.map(SOCIAL => (
+            <li class="flex gap-x-2 text-nowrap">
+              <Link href={SOCIAL.HREF} external aria-label={`${SITE.NAME} on ${SOCIAL.NAME}`}>
+                {SOCIAL.NAME}
+              </Link>
+              {"/"}
+            </li>
+          ))}
+          <li class="line-clamp-1">
+            <Link href={`mailto:${SITE.EMAIL}`} aria-label={`Email ${SITE.NAME}`}>
+              {SITE.EMAIL}
+            </Link>
+          </li>
+        </ul>
+      </section>
+
+      <section class="animate space-y-6">
+        <div class="flex flex-wrap gap-y-2 items-center justify-between">
+          <h5 class="font-black text-black dark:text-white">
+            جلسه مشاوره
+          </h5>
+          <Link href="/services">
+            مشاهده همه خدمات
+          </Link>
+        </div>
+        <ul class="flex flex-col gap-4">
+          <li class="animate-rtl">
+            <a href="/blog/consult" class="relative group flex flex-nowrap py-3 px-4 pl-10 rounded-lg border border-black/15 dark:border-white/20 hover:bg-black/5 dark:hover:bg-white/5 hover:text-black dark:hover:text-white transition-colors duration-300 ease-in-out">
+              <div class="flex flex-col flex-1 truncate">
+                <div class="font-black text-black dark:text-white">منتورینگ ۱:۱</div>
+                <div class="text-sm">برای رشد شغلی، بازبینی مسیر فنی و برنامه یادگیری شخصی.</div>
+              </div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                class="absolute top-1/2 left-2 -translate-y-1/2 size-5 stroke-2 fill-none stroke-current">
+                <line x1="5" y1="12" x2="19" y2="12" class="-translate-x-3 group-hover:translate-x-0 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out" />
+                <polyline points="12 5 5 12 12 19" class="translate-x-1 group-hover:translate-x-0 transition-transform duration-300 ease-in-out" />
+              </svg>
+            </a>
+          </li>
+          <li class="animate-rtl">
+            <a href="/blog/b2b" class="relative group flex flex-nowrap py-3 px-4 pl-10 rounded-lg border border-black/15 dark:border-white/20 hover:bg-black/5 dark:hover:bg-white/5 hover:text-black dark:hover:text-white transition-colors duration-300 ease-in-out">
+              <div class="flex flex-col flex-1 truncate">
+                <div class="font-black text-black dark:text-white">مشاوره فنی B2B</div>
+                <div class="text-sm">برای تیم‌ها و استارتاپ‌ها با تمرکز بر معماری، مقیاس‌پذیری و نقشه راه.</div>
+              </div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                class="absolute top-1/2 left-2 -translate-y-1/2 size-5 stroke-2 fill-none stroke-current">
+                <line x1="5" y1="12" x2="19" y2="12" class="-translate-x-3 group-hover:translate-x-0 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out" />
+                <polyline points="12 5 5 12 12 19" class="translate-x-1 group-hover:translate-x-0 transition-transform duration-300 ease-in-out" />
+              </svg>
+            </a>
+          </li>
+        </ul>
+      </section>
+
+      <section class="animate space-y-6">
+        <div class="flex flex-wrap gap-y-2 items-center justify-between">
+          <h5 class="font-black text-black dark:text-white">
+            آخرین نوشته‌ها
+          </h5>
+          <Link href="/blog">
+            مشاهده همه نوشته‌ها
+          </Link>
+        </div>
+        <ul class="flex flex-col gap-4">
+          {blog.map(post => (
+            <li class="animate-rtl">
+              <ArrowCard entry={post} />
+            </li>
+          ))}
+        </ul>
+      </section>
+      <section class="animate space-y-4">
+        <h5 class="font-black text-black dark:text-white">
+          مسیرهای آموزشی
+        </h5>
+        <Link href="/courses">مشاهده دوره‌ها</Link>
+      </section>
+    </div>
+  </Container>
+</PageLayout>

@@ -1,0 +1,58 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import BackToPrev from "@components/BackToPrev.astro";
+---
+
+<PageLayout title="منتورینگ ۱:۱" description="جلسه منتورینگ و مشاوره فردی">
+  <Container>
+    <article class="space-y-8">
+      <div class="animate">
+        <BackToPrev href="/services">
+          بازگشت به خدمات مشاوره
+        </BackToPrev>
+      </div>
+
+      <h1 class="animate text-2xl font-black text-black dark:text-white">منتورینگ و مشاوره ۱:۱</h1>
+      <p class="animate">
+        این جلسه برای توسعه‌دهندگانی مناسب است که می‌خواهند مسیر شغلی، رزومه، برنامه یادگیری یا تصمیم‌های فنی خود را دقیق‌تر تنظیم کنند.
+      </p>
+      <ul class="animate list-disc space-y-2 pr-5">
+        <li>بازبینی مسیر شغلی و هدف‌گذاری</li>
+        <li>بررسی کد، معماری و تصمیم‌های فنی</li>
+        <li>طراحی برنامه رشد ۳۰ تا ۹۰ روزه</li>
+      </ul>
+
+      <section class="animate space-y-3">
+        <h2 class="text-xl font-black text-black dark:text-white">نظر مراجعین</h2>
+        <ul class="space-y-3">
+          <li class="animate-rtl rounded border border-black/15 p-4 dark:border-white/20">
+            <div class="font-black text-black dark:text-white">سارا محمدی</div>
+            <div class="text-sm opacity-70">sara.m@example.com</div>
+            <p class="mt-2 text-sm">ساختار جلسه خیلی واضح بود و برای برنامه ۳ ماهه‌ام مسیر دقیق گرفتم.</p>
+          </li>
+          <li class="animate-rtl rounded border border-black/15 p-4 dark:border-white/20">
+            <div class="font-black text-black dark:text-white">علی رضایی</div>
+            <div class="text-sm opacity-70">ali.r@example.com</div>
+            <p class="mt-2 text-sm">روی رزومه و مصاحبه‌ها نکات عملی گرفتم و همان هفته نتیجه دیدم.</p>
+          </li>
+          <li class="animate-rtl rounded border border-black/15 p-4 dark:border-white/20">
+            <div class="font-black text-black dark:text-white">زهرا کریمی</div>
+            <div class="text-sm opacity-70">zahra.k@example.com</div>
+            <p class="mt-2 text-sm">بازخورد کد و پیشنهاد مسیر یادگیری بسیار کاربردی بود.</p>
+          </li>
+          <li class="animate-rtl rounded border border-black/15 p-4 dark:border-white/20">
+            <div class="font-black text-black dark:text-white">نوید عباسی</div>
+            <div class="text-sm opacity-70">navid.a@example.com</div>
+            <p class="mt-2 text-sm">برای انتخاب تکنولوژی پروژه شخصی‌ام تصمیم‌گیری خیلی راحت‌تر شد.</p>
+          </li>
+          <li class="animate-rtl rounded border border-black/15 p-4 dark:border-white/20">
+            <div class="font-black text-black dark:text-white">مریم شریفی</div>
+            <div class="text-sm opacity-70">maryam.s@example.com</div>
+            <p class="mt-2 text-sm">جلسه کوتاه اما فشرده بود و یک چک‌لیست اجرایی کامل تحویل گرفتم.</p>
+          </li>
+        </ul>
+      </section>
+    </article>
+  </Container>
+</PageLayout>

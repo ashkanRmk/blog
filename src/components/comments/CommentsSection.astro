@@ -1,0 +1,213 @@
+---
+type Props = {
+  postSlug: string;
+};
+
+const { postSlug } = Astro.props;
+---
+
+<section class="space-y-6 border-t border-black/10 pt-8 dark:border-white/20">
+  <h2 class="text-xl font-black text-black dark:text-white">دیدگاه‌ها</h2>
+
+  <form id="comment-form" class="space-y-4 rounded-lg border border-black/15 p-4 dark:border-white/20">
+    <input type="hidden" name="postSlug" value={postSlug} />
+    <div class="grid gap-3 md:grid-cols-2">
+      <div class="space-y-1">
+        <label for="authorName" class="block text-sm">نام</label>
+        <input
+          id="authorName"
+          name="authorName"
+          type="text"
+          required
+          maxlength="80"
+          class="w-full rounded-md border border-black/15 bg-transparent px-3 py-2 text-black dark:border-white/20 dark:text-white"
+        />
+      </div>
+      <div class="space-y-1">
+        <label for="authorEmail" class="block text-sm">ایمیل</label>
+        <input
+          id="authorEmail"
+          name="authorEmail"
+          type="email"
+          inputmode="email"
+          required
+          maxlength="120"
+          class="w-full rounded-md border border-black/15 bg-transparent px-3 py-2 text-black dark:border-white/20 dark:text-white"
+        />
+      </div>
+    </div>
+    <div class="space-y-1">
+      <label for="body" class="block text-sm">متن دیدگاه</label>
+      <textarea
+        id="body"
+        name="body"
+        rows="4"
+        required
+        maxlength="1000"
+        class="w-full rounded-md border border-black/15 bg-transparent px-3 py-2 text-black dark:border-white/20 dark:text-white"
+      />
+    </div>
+    <p id="comment-form-message" class="text-sm"></p>
+    <button
+      id="comment-submit-button"
+      type="submit"
+      class="rounded-md border border-black/15 px-4 py-2 text-sm font-semibold text-black transition-colors hover:bg-black/5 dark:border-white/20 dark:text-white dark:hover:bg-white/5"
+    >
+      ارسال دیدگاه
+    </button>
+  </form>
+
+  <div id="comments-status" class="text-sm">در حال بارگذاری دیدگاه‌ها...</div>
+  <ul id="comments-list" class="space-y-4"></ul>
+</section>
+
+<script>
+  import { createComment, getComments } from "@lib/comments-api";
+  import type { Comment } from "../../types/comments";
+
+  const form = document.getElementById("comment-form");
+  const status = document.getElementById("comments-status");
+  const list = document.getElementById("comments-list");
+  const submitButton = document.getElementById("comment-submit-button");
+  const formMessage = document.getElementById("comment-form-message");
+
+  const slugInput = form?.querySelector("input[name=\"postSlug\"]");
+  const postSlug = slugInput instanceof HTMLInputElement ? slugInput.value : "";
+
+  function setStatus(message: string) {
+    if (status) {
+      status.textContent = message;
+    }
+  }
+
+  function setFormMessage(message: string, isError: boolean) {
+    if (!formMessage) {
+      return;
+    }
+    formMessage.textContent = message;
+    formMessage.classList.toggle("text-red-500", Boolean(isError));
+    formMessage.classList.toggle("text-emerald-600", !isError && message.length > 0);
+  }
+
+  function formatCreatedAt(value: string) {
+    const date = new Date(value);
+    return date.toLocaleDateString("fa-IR-u-ca-persian", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  }
+
+  function formatNumber(value: number | string) {
+    const latinDigits = "0123456789";
+    const persianDigits = "۰۱۲۳۴۵۶۷۸۹";
+    return String(value).replace(/[0-9]/g, (digit) => {
+      const index = latinDigits.indexOf(digit);
+      return index >= 0 ? persianDigits[index] : digit;
+    });
+  }
+
+  function renderComments(comments: Comment[]) {
+    if (!list) {
+      return;
+    }
+
+    list.innerHTML = "";
+
+    if (!comments.length) {
+      setStatus("هنوز دیدگاهی ثبت نشده است.");
+      return;
+    }
+
+    setStatus(`تعداد دیدگاه‌ها: ${formatNumber(comments.length)}`);
+
+    comments.forEach((comment: Comment) => {
+      const item = document.createElement("li");
+      item.className = "rounded-lg border border-black/15 p-4 dark:border-white/20";
+
+      const head = document.createElement("div");
+      head.className = "mb-2 flex items-center justify-between gap-2 text-sm";
+
+      const author = document.createElement("strong");
+      author.className = "text-black dark:text-white";
+      author.textContent = comment.authorName;
+
+      const createdAt = document.createElement("time");
+      createdAt.className = "opacity-75";
+      createdAt.dateTime = comment.createdAt;
+      createdAt.textContent = formatCreatedAt(comment.createdAt);
+
+      const body = document.createElement("p");
+      body.className = "whitespace-pre-wrap text-sm";
+      body.textContent = comment.body;
+
+      head.append(author, createdAt);
+      item.append(head, body);
+      list.append(item);
+    });
+  }
+
+  async function loadComments() {
+    if (!postSlug) {
+      setStatus("شناسه نوشته برای دیدگاه‌ها پیدا نشد.");
+      return;
+    }
+
+    setStatus("در حال بارگذاری دیدگاه‌ها...");
+    try {
+      const comments = await getComments(postSlug);
+      renderComments(comments);
+    } catch {
+      setStatus("بارگذاری دیدگاه‌ها ناموفق بود. دوباره تلاش کنید.");
+    }
+  }
+
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!(form instanceof HTMLFormElement)) {
+      return;
+    }
+
+    const formData = new FormData(form);
+    const authorName = String(formData.get("authorName") ?? "").trim();
+    const authorEmail = String(formData.get("authorEmail") ?? "").trim();
+    const body = String(formData.get("body") ?? "").trim();
+
+    if (!authorName || !authorEmail || !body) {
+      setFormMessage("نام، ایمیل و متن دیدگاه الزامی است.", true);
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(authorEmail)) {
+      setFormMessage("فرمت ایمیل معتبر نیست.", true);
+      return;
+    }
+
+    if (body.length > 1000) {
+      setFormMessage("حداکثر طول دیدگاه ۱۰۰۰ کاراکتر است.", true);
+      return;
+    }
+
+    if (submitButton instanceof HTMLButtonElement) {
+      submitButton.disabled = true;
+      submitButton.textContent = "در حال ارسال...";
+    }
+    setFormMessage("", false);
+
+    try {
+      await createComment({ postSlug, authorName, authorEmail, body });
+      form.reset();
+      setFormMessage("دیدگاه با موفقیت ثبت شد.", false);
+      await loadComments();
+    } catch {
+      setFormMessage("ارسال دیدگاه ناموفق بود. دوباره تلاش کنید.", true);
+    } finally {
+      if (submitButton instanceof HTMLButtonElement) {
+        submitButton.disabled = false;
+        submitButton.textContent = "ارسال دیدگاه";
+      }
+    }
+  });
+
+  loadComments();
+</script>
