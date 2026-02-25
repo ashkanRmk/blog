@@ -4,7 +4,7 @@ import Container from "@components/Container.astro";
 import PageLayout from "@layouts/PageLayout.astro";
 import ArrowCard from "@components/ArrowCard.astro";
 import Link from "@components/Link.astro";
-import { SITE, HOME, SOCIALS } from "@consts";
+import { SITE, HOME } from "@consts";
 
 const blog = (await getCollection("blog"))
   .filter(post => !post.data.draft)
@@ -33,30 +33,35 @@ const blog = (await getCollection("blog"))
         </article>
       </section>
 
-      <section class="animate space-y-6">
-        <div class="flex flex-wrap gap-y-2 items-center justify-between">
-          <h5 class="font-black text-black dark:text-white">
-            ارتباط
-          </h5>
-        </div>
-        <article>
-          <p>
-            برای ارتباط می‌توانید از شبکه‌های اجتماعی یا ایمیل استفاده کنید.
-          </p>
-        </article>
-        <ul class="flex flex-wrap gap-2">
-          {SOCIALS.map(SOCIAL => (
-            <li class="flex gap-x-2 text-nowrap">
-              <Link href={SOCIAL.HREF} external aria-label={`${SITE.NAME} on ${SOCIAL.NAME}`}>
-                {SOCIAL.NAME}
-              </Link>
-              {"/"}
-            </li>
-          ))}
-          <li class="line-clamp-1">
-            <Link href={`mailto:${SITE.EMAIL}`} aria-label={`Email ${SITE.NAME}`}>
-              {SITE.EMAIL}
-            </Link>
+      <section class="animate">
+        <ul class="flex flex-wrap justify-center gap-3">
+          <li class="animate-rtl">
+            <a href="https://x.com" target="_blank" aria-label={`${SITE.NAME} on X`} class="inline-flex size-10 items-center justify-center rounded-full border border-black/15 text-black/70 transition-colors duration-300 ease-in-out hover:text-black hover:bg-black/5 dark:border-white/20 dark:text-white/70 dark:hover:text-white dark:hover:bg-white/5">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="size-5 fill-current">
+                <path d="M18.244 2H21.5l-7.11 8.126L22.75 22h-6.54l-5.123-6.71L5.22 22H2l7.605-8.695L1.5 2h6.706l4.63 6.13L18.244 2Zm-1.146 18.01h1.804L7.23 3.884H5.29l11.808 16.126Z" />
+              </svg>
+            </a>
+          </li>
+          <li class="animate-rtl">
+            <a href="https://www.youtube.com" target="_blank" aria-label={`${SITE.NAME} on YouTube`} class="inline-flex size-10 items-center justify-center rounded-full border border-black/15 text-black/70 transition-colors duration-300 ease-in-out hover:text-black hover:bg-black/5 dark:border-white/20 dark:text-white/70 dark:hover:text-white dark:hover:bg-white/5">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="size-5 fill-current">
+                <path d="M23.5 7.2a3 3 0 0 0-2.11-2.12C19.53 4.5 12 4.5 12 4.5s-7.53 0-9.39.58A3 3 0 0 0 .5 7.2 31.72 31.72 0 0 0 0 12a31.72 31.72 0 0 0 .5 4.8 3 3 0 0 0 2.11 2.12c1.86.58 9.39.58 9.39.58s7.53 0 9.39-.58a3 3 0 0 0 2.11-2.12A31.72 31.72 0 0 0 24 12a31.72 31.72 0 0 0-.5-4.8ZM9.75 15.23V8.77L15.75 12l-6 3.23Z" />
+              </svg>
+            </a>
+          </li>
+          <li class="animate-rtl">
+            <a href="https://github.com" target="_blank" aria-label={`${SITE.NAME} on GitHub`} class="inline-flex size-10 items-center justify-center rounded-full border border-black/15 text-black/70 transition-colors duration-300 ease-in-out hover:text-black hover:bg-black/5 dark:border-white/20 dark:text-white/70 dark:hover:text-white dark:hover:bg-white/5">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="size-5 fill-current">
+                <path d="M12 .5a12 12 0 0 0-3.79 23.39c.6.1.82-.26.82-.58v-2.06c-3.34.72-4.04-1.42-4.04-1.42a3.2 3.2 0 0 0-1.34-1.77c-1.1-.75.08-.73.08-.73a2.54 2.54 0 0 1 1.85 1.25 2.58 2.58 0 0 0 3.53 1 2.57 2.57 0 0 1 .77-1.6c-2.66-.3-5.46-1.34-5.46-5.93a4.64 4.64 0 0 1 1.24-3.23 4.3 4.3 0 0 1 .12-3.19s1-.32 3.3 1.23a11.36 11.36 0 0 1 6 0c2.3-1.55 3.3-1.23 3.3-1.23a4.3 4.3 0 0 1 .12 3.19 4.64 4.64 0 0 1 1.24 3.23c0 4.61-2.81 5.62-5.49 5.92a2.87 2.87 0 0 1 .82 2.23v3.31c0 .32.22.69.82.58A12 12 0 0 0 12 .5Z" />
+              </svg>
+            </a>
+          </li>
+          <li class="animate-rtl">
+            <a href="https://www.linkedin.com" target="_blank" aria-label={`${SITE.NAME} on LinkedIn`} class="inline-flex size-10 items-center justify-center rounded-full border border-black/15 text-black/70 transition-colors duration-300 ease-in-out hover:text-black hover:bg-black/5 dark:border-white/20 dark:text-white/70 dark:hover:text-white dark:hover:bg-white/5">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="size-5 fill-current">
+                <path d="M4.98 3.5a2.49 2.49 0 1 0 0 4.98 2.49 2.49 0 0 0 0-4.98ZM2.8 9.44h4.36V21.5H2.8V9.44Zm7.11 0h4.18v1.65h.06a4.58 4.58 0 0 1 4.12-2.26c4.4 0 5.21 2.9 5.21 6.67v5.99h-4.36v-5.31c0-1.26-.02-2.89-1.76-2.89-1.77 0-2.04 1.37-2.04 2.8v5.4H9.91V9.44Z" />
+              </svg>
+            </a>
           </li>
         </ul>
       </section>
