@@ -1,0 +1,52 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import BackToPrev from "@components/BackToPrev.astro";
+import LinkCard from "@components/LinkCard.astro";
+
+type CardItem = {
+  href: string;
+  title: string;
+  description: string;
+};
+
+type Props = {
+  title: string;
+  description: string;
+  backHref?: string;
+  backText?: string;
+  cards: CardItem[];
+};
+
+const propsAny = Astro.props as Record<string, unknown>;
+const data = ((propsAny.frontmatter as Props | undefined) ?? (propsAny as Props));
+const { title, description, backHref, backText, cards = [] } = data;
+---
+
+<PageLayout title={title} description={description}>
+  <Container>
+    <article class="space-y-8">
+      {backHref && backText && (
+        <div class="animate">
+          <BackToPrev href={backHref}>
+            {backText}
+          </BackToPrev>
+        </div>
+      )}
+
+      <div class="md-flow-content">
+        <slot />
+      </div>
+
+      {cards.length > 0 && (
+        <ul class="flex flex-col gap-4">
+          {cards.map((card) => (
+            <li class="animate-rtl">
+              <LinkCard href={card.href} title={card.title} description={card.description} />
+            </li>
+          ))}
+        </ul>
+      )}
+    </article>
+  </Container>
+</PageLayout>

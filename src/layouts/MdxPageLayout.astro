@@ -1,0 +1,33 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import BackToPrev from "@components/BackToPrev.astro";
+
+type Props = {
+  title: string;
+  description: string;
+  backHref?: string;
+  backText?: string;
+};
+
+const propsAny = Astro.props as Record<string, unknown>;
+const data = ((propsAny.frontmatter as Props | undefined) ?? (propsAny as Props));
+const { title, description, backHref, backText } = data;
+---
+
+<PageLayout title={title} description={description}>
+  <Container>
+    <article class="space-y-8">
+      {backHref && backText && (
+        <div class="animate">
+          <BackToPrev href={backHref}>
+            {backText}
+          </BackToPrev>
+        </div>
+      )}
+      <div class="animate">
+        <slot />
+      </div>
+    </article>
+  </Container>
+</PageLayout>
