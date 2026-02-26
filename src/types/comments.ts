@@ -1,15 +1,18 @@
 export type Comment = {
-  id: string;
-  postSlug: string;
-  authorName: string;
-  authorEmail?: string;
+  id: number;
+  created_at: string;
+  email: string;
+  name: string;
+  post_slug: string;
   body: string;
-  createdAt: string;
+  parent: number | null;
 };
 
 export type CreateCommentInput = {
-  postSlug: string;
-  authorName: string;
-  authorEmail: string;
+  email: string;
+  name: string;
+  post_slug: string;
   body: string;
+  created_at: string;
+  parent: number | null;
 };

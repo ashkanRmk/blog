@@ -1,0 +1,12 @@
+services:
+  blog:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PUBLIC_SUPABASE_URL: ${PUBLIC_SUPABASE_URL}
+        PUBLIC_SUPABASE_ANON_KEY: ${PUBLIC_SUPABASE_ANON_KEY}
+    image: smn-blog:latest
+    ports:
+      - "8080:80"
+    restart: unless-stopped

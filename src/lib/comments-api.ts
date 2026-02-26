@@ -1,52 +1,53 @@
+import { createClient } from "@supabase/supabase-js";
 import type { Comment, CreateCommentInput } from "../types/comments";
 
-const DEFAULT_TIMEOUT_MS = 8000;
+function getSupabaseClient() {
+  const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 
-function getConfig() {
-  const baseUrl = import.meta.env.PUBLIC_COMMENTS_API_BASE_URL;
-  const timeout = Number(import.meta.env.PUBLIC_COMMENTS_TIMEOUT_MS ?? DEFAULT_TIMEOUT_MS);
-
-  if (!baseUrl) {
-    throw new Error("PUBLIC_COMMENTS_API_BASE_URL is not set.");
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error("PUBLIC_SUPABASE_URL or PUBLIC_SUPABASE_ANON_KEY is not set.");
   }
 
-  return {
-    baseUrl: baseUrl.replace(/\/+$/, ""),
-    timeout: Number.isFinite(timeout) ? timeout : DEFAULT_TIMEOUT_MS,
-  };
-}
-
-async function requestJson<T>(url: string, init: RequestInit = {}, timeoutMs: number): Promise<T> {
-  const controller = new AbortController();
-  const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
-
-  try {
-    const response = await fetch(url, { ...init, signal: controller.signal });
-    if (!response.ok) {
-      throw new Error(`Request failed with status ${response.status}`);
-    }
-    return await response.json() as T;
-  } finally {
-    window.clearTimeout(timeoutId);
-  }
+  return createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  });
 }
 
 export async function getComments(postSlug: string): Promise<Comment[]> {
-  const { baseUrl, timeout } = getConfig();
-  const url = new URL(`${baseUrl}/comments`);
-  url.searchParams.set("postSlug", postSlug);
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from("comments")
+    .select("id, created_at, email, name, post_slug, body, parent")
+    .eq("post_slug", postSlug)
+    .order("created_at", { ascending: true });
 
-  const comments = await requestJson<Comment[]>(url.toString(), { method: "GET" }, timeout);
-  return comments.sort((a, b) => new Date(b.createdAt).valueOf() - new Date(a.createdAt).valueOf());
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []) as Comment[];
 }
 
-export async function createComment(input: CreateCommentInput): Promise<Comment> {
-  const { baseUrl, timeout } = getConfig();
-  return requestJson<Comment>(`${baseUrl}/comments`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(input),
-  }, timeout);
+export async function createComment(input: Omit<CreateCommentInput, "created_at">): Promise<Comment> {
+  const supabase = getSupabaseClient();
+  const payload: CreateCommentInput = {
+    ...input,
+    created_at: new Date().toISOString(),
+  };
+
+  const { data, error } = await supabase
+    .from("comments")
+    .insert(payload)
+    .select("id, created_at, email, name, post_slug, body, parent")
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data as Comment;
 }

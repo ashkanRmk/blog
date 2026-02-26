@@ -11,6 +11,7 @@ const { postSlug } = Astro.props;
 
   <form id="comment-form" class="space-y-4 rounded-lg border border-black/15 p-4 dark:border-white/20">
     <input type="hidden" name="postSlug" value={postSlug} />
+    <input type="hidden" name="parent" value="" />
     <div class="grid gap-3 md:grid-cols-2">
       <div class="space-y-1">
         <label for="authorName" class="block text-sm">نام</label>
@@ -48,6 +49,16 @@ const { postSlug } = Astro.props;
       />
     </div>
     <p id="comment-form-message" class="text-sm"></p>
+    <div id="comment-reply-target" class="hidden items-center justify-between rounded-md border border-black/15 px-3 py-2 text-sm dark:border-white/20">
+      <span id="comment-reply-text"></span>
+      <button
+        id="comment-reply-cancel"
+        type="button"
+        class="rounded border border-black/15 px-2 py-1 text-xs hover:bg-black/5 dark:border-white/20 dark:hover:bg-white/5"
+      >
+        لغو پاسخ
+      </button>
+    </div>
     <button
       id="comment-submit-button"
       type="submit"
@@ -65,28 +76,17 @@ const { postSlug } = Astro.props;
   import { createComment, getComments } from "@lib/comments-api";
   import type { Comment } from "../../types/comments";
 
-  const form = document.getElementById("comment-form");
-  const status = document.getElementById("comments-status");
-  const list = document.getElementById("comments-list");
-  const submitButton = document.getElementById("comment-submit-button");
-  const formMessage = document.getElementById("comment-form-message");
-
-  const slugInput = form?.querySelector("input[name=\"postSlug\"]");
-  const postSlug = slugInput instanceof HTMLInputElement ? slugInput.value : "";
-
-  function setStatus(message: string) {
-    if (status) {
-      status.textContent = message;
-    }
+  function setStatus(statusElement: HTMLElement | null, message: string) {
+    statusElement?.replaceChildren(document.createTextNode(message));
   }
 
-  function setFormMessage(message: string, isError: boolean) {
-    if (!formMessage) {
+  function setFormMessage(formMessageElement: HTMLElement | null, message: string, isError: boolean) {
+    if (!formMessageElement) {
       return;
     }
-    formMessage.textContent = message;
-    formMessage.classList.toggle("text-red-500", Boolean(isError));
-    formMessage.classList.toggle("text-emerald-600", !isError && message.length > 0);
+    formMessageElement.textContent = message;
+    formMessageElement.classList.toggle("text-red-500", Boolean(isError));
+    formMessageElement.classList.toggle("text-emerald-600", !isError && message.length > 0);
   }
 
   function formatCreatedAt(value: string) {
@@ -107,107 +107,211 @@ const { postSlug } = Astro.props;
     });
   }
 
-  function renderComments(comments: Comment[]) {
-    if (!list) {
+  function renderComments(
+    comments: Comment[],
+    listElement: HTMLElement | null,
+    statusElement: HTMLElement | null,
+    onReply: (comment: Comment) => void
+  ) {
+    if (!listElement) {
       return;
     }
+    const safeList = listElement;
 
-    list.innerHTML = "";
+    safeList.innerHTML = "";
 
     if (!comments.length) {
-      setStatus("هنوز دیدگاهی ثبت نشده است.");
+      setStatus(statusElement, "هنوز دیدگاهی ثبت نشده است.");
       return;
     }
 
-    setStatus(`تعداد دیدگاه‌ها: ${formatNumber(comments.length)}`);
+    setStatus(statusElement, `تعداد دیدگاه‌ها: ${formatNumber(comments.length)}`);
 
-    comments.forEach((comment: Comment) => {
+    const repliesByParent = new Map<number, Comment[]>();
+    const rootComments: Comment[] = [];
+
+    comments.forEach((comment) => {
+      if (comment.parent === null) {
+        rootComments.push(comment);
+        return;
+      }
+      const siblings = repliesByParent.get(comment.parent) ?? [];
+      siblings.push(comment);
+      repliesByParent.set(comment.parent, siblings);
+    });
+
+    function renderCommentItem(comment: Comment, depth = 0) {
       const item = document.createElement("li");
       item.className = "rounded-lg border border-black/15 p-4 dark:border-white/20";
+      if (depth > 0) {
+        item.classList.add("ms-6", "border-dashed");
+      }
 
       const head = document.createElement("div");
       head.className = "mb-2 flex items-center justify-between gap-2 text-sm";
 
+      const authorWrap = document.createElement("div");
+      authorWrap.className = "flex flex-col";
+
       const author = document.createElement("strong");
       author.className = "text-black dark:text-white";
-      author.textContent = comment.authorName;
+      author.textContent = comment.name;
+
+      const email = document.createElement("span");
+      email.className = "text-xs opacity-70";
+      email.textContent = comment.email;
+      authorWrap.append(author, email);
 
       const createdAt = document.createElement("time");
       createdAt.className = "opacity-75";
-      createdAt.dateTime = comment.createdAt;
-      createdAt.textContent = formatCreatedAt(comment.createdAt);
+      createdAt.dateTime = comment.created_at;
+      createdAt.textContent = formatCreatedAt(comment.created_at);
 
       const body = document.createElement("p");
       body.className = "whitespace-pre-wrap text-sm";
       body.textContent = comment.body;
 
-      head.append(author, createdAt);
-      item.append(head, body);
-      list.append(item);
-    });
+      const replyBtn = document.createElement("button");
+      replyBtn.type = "button";
+      replyBtn.className = "mt-3 rounded border border-black/15 px-2 py-1 text-xs hover:bg-black/5 dark:border-white/20 dark:hover:bg-white/5";
+      replyBtn.textContent = "پاسخ";
+      replyBtn.addEventListener("click", () => onReply(comment));
+
+      head.append(authorWrap, createdAt);
+      item.append(head, body, replyBtn);
+      safeList.append(item);
+
+      const childReplies = repliesByParent.get(comment.id) ?? [];
+      childReplies.forEach((child) => renderCommentItem(child, depth + 1));
+    }
+
+    rootComments.forEach((comment) => renderCommentItem(comment));
   }
 
-  async function loadComments() {
+  async function loadComments(
+    postSlug: string,
+    listElement: HTMLElement | null,
+    statusElement: HTMLElement | null,
+    onReply: (comment: Comment) => void
+  ) {
     if (!postSlug) {
-      setStatus("شناسه نوشته برای دیدگاه‌ها پیدا نشد.");
+      setStatus(statusElement, "شناسه نوشته برای دیدگاه‌ها پیدا نشد.");
       return;
     }
 
-    setStatus("در حال بارگذاری دیدگاه‌ها...");
+    setStatus(statusElement, "در حال بارگذاری دیدگاه‌ها...");
     try {
       const comments = await getComments(postSlug);
-      renderComments(comments);
+      renderComments(comments, listElement, statusElement, onReply);
     } catch {
-      setStatus("بارگذاری دیدگاه‌ها ناموفق بود. دوباره تلاش کنید.");
+      setStatus(statusElement, "بارگذاری دیدگاه‌ها ناموفق بود. دوباره تلاش کنید.");
     }
   }
 
-  form?.addEventListener("submit", async (event) => {
-    event.preventDefault();
+  function initCommentsSection() {
+    const form = document.getElementById("comment-form");
+    const status = document.getElementById("comments-status");
+    const list = document.getElementById("comments-list");
+    const submitButton = document.getElementById("comment-submit-button");
+    const formMessage = document.getElementById("comment-form-message");
+    const replyTarget = document.getElementById("comment-reply-target");
+    const replyText = document.getElementById("comment-reply-text");
+    const replyCancel = document.getElementById("comment-reply-cancel");
+
     if (!(form instanceof HTMLFormElement)) {
       return;
     }
 
-    const formData = new FormData(form);
-    const authorName = String(formData.get("authorName") ?? "").trim();
-    const authorEmail = String(formData.get("authorEmail") ?? "").trim();
-    const body = String(formData.get("body") ?? "").trim();
+    const slugInput = form.querySelector("input[name=\"postSlug\"]");
+    const parentInput = form.querySelector("input[name=\"parent\"]");
+    const postSlug = slugInput instanceof HTMLInputElement ? slugInput.value : "";
 
-    if (!authorName || !authorEmail || !body) {
-      setFormMessage("نام، ایمیل و متن دیدگاه الزامی است.", true);
-      return;
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(authorEmail)) {
-      setFormMessage("فرمت ایمیل معتبر نیست.", true);
-      return;
-    }
-
-    if (body.length > 1000) {
-      setFormMessage("حداکثر طول دیدگاه ۱۰۰۰ کاراکتر است.", true);
-      return;
-    }
-
-    if (submitButton instanceof HTMLButtonElement) {
-      submitButton.disabled = true;
-      submitButton.textContent = "در حال ارسال...";
-    }
-    setFormMessage("", false);
-
-    try {
-      await createComment({ postSlug, authorName, authorEmail, body });
-      form.reset();
-      setFormMessage("دیدگاه با موفقیت ثبت شد.", false);
-      await loadComments();
-    } catch {
-      setFormMessage("ارسال دیدگاه ناموفق بود. دوباره تلاش کنید.", true);
-    } finally {
-      if (submitButton instanceof HTMLButtonElement) {
-        submitButton.disabled = false;
-        submitButton.textContent = "ارسال دیدگاه";
+    function clearReplyTarget() {
+      if (parentInput instanceof HTMLInputElement) {
+        parentInput.value = "";
+      }
+      replyTarget?.classList.add("hidden");
+      replyTarget?.classList.remove("flex");
+      if (replyText) {
+        replyText.textContent = "";
       }
     }
-  });
 
-  loadComments();
+    function setReplyTarget(comment: Comment) {
+      if (parentInput instanceof HTMLInputElement) {
+        parentInput.value = String(comment.id);
+      }
+      if (replyText) {
+        replyText.textContent = `در حال پاسخ به ${comment.name}`;
+      }
+      replyTarget?.classList.remove("hidden");
+      replyTarget?.classList.add("flex");
+    }
+
+    if (replyCancel && !replyCancel.dataset.bound) {
+      replyCancel.dataset.bound = "true";
+      replyCancel.addEventListener("click", clearReplyTarget);
+    }
+
+    if (form.dataset.commentsBound !== "true") {
+      form.dataset.commentsBound = "true";
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const formData = new FormData(form);
+        const authorName = String(formData.get("authorName") ?? "").trim();
+        const authorEmail = String(formData.get("authorEmail") ?? "").trim();
+        const body = String(formData.get("body") ?? "").trim();
+        const parentRaw = String(formData.get("parent") ?? "").trim();
+        const parentValue = parentRaw ? Number(parentRaw) : null;
+
+        if (!authorName || !authorEmail || !body) {
+          setFormMessage(formMessage, "نام، ایمیل و متن دیدگاه الزامی است.", true);
+          return;
+        }
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(authorEmail)) {
+          setFormMessage(formMessage, "فرمت ایمیل معتبر نیست.", true);
+          return;
+        }
+
+        if (body.length > 1000) {
+          setFormMessage(formMessage, "حداکثر طول دیدگاه ۱۰۰۰ کاراکتر است.", true);
+          return;
+        }
+
+        if (submitButton instanceof HTMLButtonElement) {
+          submitButton.disabled = true;
+          submitButton.textContent = "در حال ارسال...";
+        }
+
+        setFormMessage(formMessage, "", false);
+
+        try {
+          await createComment({
+            post_slug: postSlug,
+            name: authorName,
+            email: authorEmail,
+            body,
+            parent: Number.isNaN(parentValue ?? 0) ? null : parentValue,
+          });
+          form.reset();
+          clearReplyTarget();
+          setFormMessage(formMessage, "دیدگاه با موفقیت ثبت شد.", false);
+          await loadComments(postSlug, list, status, setReplyTarget);
+        } catch {
+          setFormMessage(formMessage, "ارسال دیدگاه ناموفق بود. دوباره تلاش کنید.", true);
+        } finally {
+          if (submitButton instanceof HTMLButtonElement) {
+            submitButton.disabled = false;
+            submitButton.textContent = "ارسال دیدگاه";
+          }
+        }
+      });
+    }
+    loadComments(postSlug, list, status, setReplyTarget);
+  }
+
+  document.addEventListener("DOMContentLoaded", initCommentsSection);
+  document.addEventListener("astro:after-swap", initCommentsSection);
+  initCommentsSection();
 </script>
