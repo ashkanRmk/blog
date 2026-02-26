@@ -2,7 +2,7 @@
 import PageLayout from "@layouts/PageLayout.astro";
 import Container from "@components/Container.astro";
 import BackToPrev from "@components/BackToPrev.astro";
-import LinkCard from "@components/LinkCard.astro";
+import ArrowCard from "@components/ArrowCard.astro";
 
 type CardItem = {
   href: string;
@@ -41,9 +41,9 @@ const { title, description, backHref, backText, cards = [] } = data;
       {cards.length > 0 && (
         <ul class="flex flex-col gap-4">
           {cards.map((card) => (
-            <li class="animate-rtl">
-              <LinkCard href={card.href} title={card.title} description={card.description} />
-            </li>
+            <div class="animate-rtl">
+              <ArrowCard entry={{ href: card.href, data: { title: card.title, description: card.description } }} />
+            </div>
           ))}
         </ul>
       )}

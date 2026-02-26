@@ -311,7 +311,7 @@ const { postSlug } = Astro.props;
     loadComments(postSlug, list, status, setReplyTarget);
   }
 
-  document.addEventListener("DOMContentLoaded", initCommentsSection);
-  document.addEventListener("astro:after-swap", initCommentsSection);
+  const appWindow = window as Window & { __initCommentsSection?: () => void };
+  appWindow.__initCommentsSection = initCommentsSection;
   initCommentsSection();
 </script>

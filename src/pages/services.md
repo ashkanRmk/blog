@@ -1,5 +1,5 @@
 ---
-layout: ../../layouts/CardLinksPageLayout.astro
+layout: ../layouts/CardLinksPageLayout.astro
 title: "خدمات مشاوره"
 description: "خدمات مشاوره فنی و منتورینگ"
 cards:
