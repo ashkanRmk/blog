@@ -1,0 +1,22 @@
+---
+type NoticeType = "warning" | "info";
+
+type Props = {
+  type?: NoticeType;
+  title?: string;
+};
+
+const { type = "info", title } = Astro.props as Props;
+
+const variantClasses: Record<NoticeType, string> = {
+  warning: "border-amber-300/70 bg-amber-50/80 text-amber-900 dark:border-amber-500/35 dark:bg-amber-500/12 dark:text-amber-100",
+  info: "border-sky-300/70 bg-sky-50/80 text-sky-900 dark:border-sky-500/35 dark:bg-sky-500/12 dark:text-sky-100",
+};
+---
+
+<aside class:list={["not-prose rounded-xl border px-4 py-3", variantClasses[type]]}>
+  {title && <p class="mb-1 font-bold tracking-tight">{title}</p>}
+  <div class="text-sm leading-7">
+    <slot />
+  </div>
+</aside>
